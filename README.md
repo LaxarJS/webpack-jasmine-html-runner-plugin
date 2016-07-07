@@ -2,17 +2,17 @@
 
 > *interactive in-browser testing* with webpack.
 
-* allows using [webpack](http://webpack.github.io/) & its dev-server for in-browser [Jasmine](http://jasmine.github.io/2.4/introduction.html) tests.
+* allows using [webpack](http://webpack.github.io/) & its dev-server for in-browser [Jasmine](http://jasmine.github.io/2.4/introduction.html) tests,
 
-* generates a `spec-runner.html` webpack entry for each of your JavaScript spec-entry files (specified by a pattern).
+* generates a `spec-runner.html` webpack entry for each of your JavaScript spec-files, specified by a pattern,
 
-* uses [sourcemapped-stacktrace](https://github.com/novocaine/sourcemapped-stacktrace) to fix stack traces in the Jasmine HTML reporter
+* uses [sourcemapped-stacktrace](https://github.com/novocaine/sourcemapped-stacktrace) to fix stack traces in the Jasmine HTML reporter.
 
 
 ### Installation
 
 First make sure that `webpack` and `webpack-dev-server` are installed and configured for your project.
-Make sure that Jasmine 2 is installed in your project, and that your spec-test use the Jasmine APIs (`describe`, `beforeEach`, etc.) as global functions.
+Make sure that Jasmine 2 is installed in your project, and that your spec-tests use the Jasmine APIs (`describe`, `beforeEach`, etc.) as global functions.
 
 ```console
 npm install --save-dev webpack-jasmine-html-runner-plugin
@@ -26,6 +26,9 @@ Create a webpack configuration for your tests, e.g. `webpack.spec.config.js`.
 In this configuration:
 
 ```js
+const webpack = require( 'webpack' );
+const WebpackJasmineHtmlRunnerPlugin = require( 'webpack-jasmine-html-runner-plugin' );
+
 // load or otherwise create your base webpack configuration:
 const config = require( './webpack.config' );
 
@@ -51,7 +54,7 @@ Now, run the webpack-dev-server:
 webpack-dev-server --inline --config webpack.spec.config.js
 ```
 
-When the webpack dev server has finished setting up, you can visit your spec-tests at [localhost:8080/webpack-dev-server](http://localhost:8080/webpack-dev-server).
+When the webpack dev server has finished setting up, you can visit your spec-tests at [localhost:8080/webpack-dev-server](http://localhost:8080/webpack-dev-server/spec-output/).
 
 
 
@@ -76,7 +79,7 @@ config.plugins = [
    } ),
    new WebpackJasmineHtmlRunnerPlugin( {
       // add an option to also bundle and load the polyfills
-      includePaths: path.resolve( process.cwd(), 'spec-output/polyfills.bundle.js' )
+      includePaths: [ path.resolve( process.cwd(), 'spec-output/polyfills.bundle.js' ) ]
    } )
 ];
 ```

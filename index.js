@@ -21,7 +21,6 @@ module.exports = WebpackJasmineHtmlRunnerPlugin;
 
 WebpackJasmineHtmlRunnerPlugin.entry = entry;
 
-
 /**
  * Takes a file pattern of the form './path/to/[name]/spec-runner.js'.
  * The [name]-portion of the path is matched using a '**' glob-expression, so it may contain subfolders.
@@ -47,15 +46,15 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
       includePaths: [],
       jasminePath: null,
       sourceMappedStackTracePath: null,
-      pattern: /(.*)\bspec-runner/
+      pattern: /.*\bspec-runner.*/
    }, optionalOptions || {} );
 
    options.jasminePath = options.jasminePath || path.resolve(
-      options.cwd, require.resolve( 'jasmine-core/lib/jasmine-core' )
+      options.cwd, resolve( 'jasmine-core' ).replace( /.js$/, '' )
    );
 
    options.sourceMappedStackTracePath = options.sourceMappedStackTracePath || path.resolve(
-      options.cwd, require.resolve( './node_modules/sourcemapped-stacktrace/dist' )
+      options.cwd, resolve( 'sourcemapped-stacktrace' )
    );
 
    this.apply = function( compiler ) {
@@ -66,9 +65,9 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
                const chunkPath = path.resolve( options.cwd, `${chunk.name}.html` );
                const context = Object.assign( {}, {
                   title: `${chunk.name} Spec ${ options.title || '' }`,
-                  jasmineUrl: path.relative( chunkPath, context.jasminePath ),
-                  sourceMappedStackTraceUrl: path.relative( chunkPath, context.sourceMappedStackTracePath ),
-                  includeUrls: context.includePaths.map( p => path.relative( chunkPath, p ) )
+                  jasmineUrl: path.relative( chunkPath, options.jasminePath ),
+                  sourceMappedStackTraceUrl: path.relative( chunkPath, options.sourceMappedStackTracePath ),
+                  includeUrls: options.includePaths.map( p => path.relative( chunkPath, p ) )
                }, options );
 
                const source = expand( context );
@@ -94,7 +93,7 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
               <script type="text/javascript" src="${ctx.jasmineUrl}/jasmine-html.js"></script>
               <script type="text/javascript" src="${ctx.jasmineUrl}/boot.js"></script>
 
-              <script type="text/javascript" src="${ctx.sourceMappedStackTraceUrl}/sourcemapped-stacktrace.js"></script>
+              <script type="text/javascript" src="${ctx.sourceMappedStackTraceUrl}"></script>
               <script type="text/javascript">
                // Fixup stack traces, using this approach: https://gist.github.com/guncha/f45ceef6d483c384290a
                jasmine.getEnv().addReporter( {
@@ -118,4 +117,8 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
          </html>
       `;
    }
+}
+
+function resolve( modulePath ) {
+   return require.resolve( modulePath );
 }

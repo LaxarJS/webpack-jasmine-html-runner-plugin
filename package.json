@@ -25,7 +25,11 @@
   },
   "homepage": "https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin#readme",
   "dependencies": {
-    "glob": "^7.0.5",
+    "glob": "^7.0.5"
+  },
+  "peerDependencies": {
+    "webpack": "^1.13.1",
+    "jasmine-core": "^2.4.1",
     "sourcemapped-stacktrace": "^1.1.3"
   }
 }
