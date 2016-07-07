@@ -48,14 +48,16 @@ config.plugins = [
 ];
 ```
 
-Now, run the webpack-dev-server:
+Now, run webpack and the webpack-dev-server:
 
 ```console
+webpack --config webpack.spec.config.js
 webpack-dev-server --inline --config webpack.spec.config.js
 ```
 
-When the webpack dev server has finished setting up, you can visit your spec-tests at [localhost:8080/webpack-dev-server](http://localhost:8080/webpack-dev-server/spec-output/).
+You may skip the first step (running `webpack`), but doing so allows you to conveniently click through a file listing in your web browser, to navigate to you spec-test.
 
+When the webpack dev server has finished setting up, you can visit your spec-tests under [localhost:8080/webpack-dev-server/spec-output/](http://localhost:8080/webpack-dev-server/spec-output/) (append `some-module/spec-runner.html` to view the test for `some-module`).
 
 
 ### Usage with additional script

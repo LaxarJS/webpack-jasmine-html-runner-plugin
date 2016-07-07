@@ -100,15 +100,16 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
                   jasmineDone: function() {
                      try {
                         var traces = document.querySelectorAll( '.jasmine-stack-trace' );
-                        [].slice.call( traces ).forEach( function( node ) {
-                           sourceMappedStackTrace.mapStackTrace( node.textContent, function( stack ) {
-                              node.textContent = node.previousSibling.textContent + "\\n" + stack.join( "\\n" );
-                           } );
-                        } );
+                        [].slice.call( traces ).forEach( fixStackTrace );
                      }
                      catch(e) { /* ok, just an unsupported browser */ }
                   }
                } );
+               function fixStackTrace( node ) {
+                  sourceMappedStackTrace.mapStackTrace( node.textContent, function( stack ) {
+                     node.textContent = node.previousSibling.textContent + "\\n" + stack.join( "\\n" );
+                  } );
+               }
                </script>
            </head>
            <body>
