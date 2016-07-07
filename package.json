@@ -1,0 +1,31 @@
+{
+  "name": "webpack-jasmine-html-runner-plugin",
+  "version": "0.1.0-pre",
+  "description": "Use webpack with interactive browser testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "jasmine",
+    "html",
+    "spec",
+    "babel",
+    "testing"
+  ],
+  "author": "aixigo AG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues"
+  },
+  "homepage": "https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin#readme",
+  "dependencies": {
+    "glob": "^7.0.5",
+    "sourcemapped-stacktrace": "^1.1.3"
+  }
+}
