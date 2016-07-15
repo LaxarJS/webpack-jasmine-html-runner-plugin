@@ -57,7 +57,7 @@ webpack --config webpack.spec.config.js
 webpack-dev-server --inline --config webpack.spec.config.js
 ```
 
-You may skip the first step (running `webpack`), but doing so allows you to conveniently click through a file listing in your web browser, to navigate to you spec-test.
+You may skip the first step (running `webpack`), but doing so allows you to conveniently browse through a file listing in your web browser, in order to navigate to your spec-tests.
 
 When the webpack dev server has finished setting up, you can visit your spec-tests under [localhost:8080/webpack-dev-server/spec-output/](http://localhost:8080/webpack-dev-server/spec-output/) (append `some-module/spec-runner.html` to view the test for `some-module`).
 
@@ -77,17 +77,17 @@ If you remove the configuration `fixupScripts: []` from the example above, you r
 
 ### Usage with additional script
 
-Let's assume that your project or its tests need additional polyfills or framework script to be loaded.
-You could try to shoehorn it into the webpack entry points generated above, but the `WebpackJasmineHtmlRunnerPlugin` also has an option for this:
+Let's assume that your project or its tests need additional polyfills or framework scripts to be loaded.
+You could try to shoehorn those scripts into the webpack entry points generated above, but the `WebpackJasmineHtmlRunnerPlugin` also provides the convenient option `includePaths` for this:
 
-Create a file `polyfills.js` containing your additional dependencies and modify your configuration like this:
+Create a file containing your additional dependencies, e.g. `polyfills.js`, and modify your configuration like this:
 
 ```js
 const config = require( /* see above */ );
 config.entry = WebpackJasmineHtmlRunnerPlugin.entry( /* see above */ );
 config.output = { /* see above */ };
 
-// add a webpack entry to also generate polyfills
+// add a webpack entry to also generate the polyfills bundle
 config.entry.polyfills = './polyfills.js';
 
 config.plugins = [
