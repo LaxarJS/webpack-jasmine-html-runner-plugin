@@ -1,0 +1,6 @@
+{
+   "extends": "laxarjs/node",
+   "env": {
+      "browser": false
+   }
+}

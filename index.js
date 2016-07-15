@@ -15,17 +15,20 @@
 /* eslint-env node */
 
 const path = require( 'path' );
-const glob = require('glob');
+const glob = require( 'glob' );
 
 module.exports = WebpackJasmineHtmlRunnerPlugin;
 
 WebpackJasmineHtmlRunnerPlugin.entry = entry;
 
 /**
- * Takes a file pattern of the form './path/to/[name]/spec-runner.js'.
- * The [name]-portion of the path is matched using a '**' glob-expression, so it may contain subfolders.
+ * Generates webpack entry points suitable for use with the WebpackJasmineHtmlRunnerPlugin plugin.
  *
- * Returns entry points for use as webpack `entry` configuration, as an object.
+ * @param {String} pattern
+ *   A file pattern of the form './path/to/[name]/spec-runner.js'.
+ *   The [name]-portion of the path is matched using a '**' glob-expression, so it may contain subfolders.
+ *
+ * @return {String} entry points for use as webpack `entry` configuration, as an object.
  */
 function entry( pattern ) {
    const globPattern = pattern.replace( '[name]', '**' );
@@ -40,12 +43,42 @@ function entry( pattern ) {
       }, {} );
 }
 
+const fixupDependencies = {
+   'fixup-stacktraces': [ 'sourcemapped-stacktrace' ],
+   'fixup-json-messages': [
+      'jsondiffpatch/public/build/jsondiffpatch',
+      'jsondiffpatch/public/build/jsondiffpatch-formatters'
+   ]
+};
+
+const fixupStyles = {
+   'fixup-json-messages': [
+      'jsondiffpatch/public/formatters-styles/html.css'
+   ]
+};
+
+/**
+ * Generates webpack entry points suitable for use with the WebpackJasmineHtmlRunnerPlugin plugin.
+ *
+ * @param {Object} optionalOptions
+ *   Various options to control the generated spec runners.
+ *
+ * @param {String[]} [optionalOptions.fixupScripts]
+ *   One or more of these (default: all):
+ *    - 'fix-stacktraces': applies sourcemap lookup
+ *    - 'fix-json-messages': applies JSON formatting
+ *
+ * @param {String[]} [optionalOptions.includePaths]
+ *   Absolute paths to additional scripts that should be loaded by the HTML spec runner (after Jasmine has
+ *   been loaded).
+ */
 function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
    const options = Object.assign( {
       cwd: process.cwd(),
-      includePaths: [],
       jasminePath: null,
-      sourceMappedStackTracePath: null,
+      stylePaths: [],
+      includePaths: [],
+      fixupScripts: [ 'fixup-stacktraces', 'fixup-json-messages' ],
       pattern: /.*\bspec-runner.*/
    }, optionalOptions || {} );
 
@@ -53,21 +86,31 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
       options.cwd, resolve( 'jasmine-core' ).replace( /.js$/, '' )
    );
 
-   options.sourceMappedStackTracePath = options.sourceMappedStackTracePath || path.resolve(
-      options.cwd, resolve( 'sourcemapped-stacktrace' )
-   );
-
    this.apply = function( compiler ) {
       compiler.plugin('emit', ( compilation, done ) => {
          compilation.chunks
             .filter( chunk => options.pattern.test( chunk.name ) )
-            .forEach( ( chunk ) => {
+            .forEach( chunk => {
+               const stylePaths = options.stylePaths.slice();
+               const includePaths = options.includePaths.slice();
+               options.fixupScripts.forEach( name => {
+                  ( fixupDependencies[ name ] || [] ).forEach( dep => {
+                     includePaths.push( require.resolve( dep ) );
+                  } );
+                  ( fixupStyles[ name ] || [] ).forEach( cssDep => {
+                     stylePaths.push( require.resolve( cssDep ) );
+                  } );
+                  includePaths.push( require.resolve( `./lib/${name}` ) );
+               } );
+
                const chunkPath = path.resolve( options.cwd, `${chunk.name}.html` );
+               const styleUrls = stylePaths.map( p => path.relative( chunkPath, p ) );
+               const includeUrls = includePaths.map( p => path.relative( chunkPath, p ) );
                const context = Object.assign( {}, {
-                  title: `${chunk.name} Spec ${ options.title || '' }`,
+                  title: `${chunk.name} Spec ${options.title || ''}`,
                   jasmineUrl: path.relative( chunkPath, options.jasminePath ),
-                  sourceMappedStackTraceUrl: path.relative( chunkPath, options.sourceMappedStackTracePath ),
-                  includeUrls: options.includePaths.map( p => path.relative( chunkPath, p ) )
+                  styleUrls,
+                  includeUrls
                }, options );
 
                const source = expand( context );
@@ -88,32 +131,24 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
               <meta http-equiv="X-UA-Compatible" content="IE=edge">
               <title>${ctx.title}</title>
               <link type="text/css" rel="stylesheet" href="${ctx.jasmineUrl}/jasmine.css">
-              ${ ctx.includeUrls.map( url => `<script type="text/javascript" src="${url}"></script>` ) }
+              ${ctx.styleUrls.map(
+                 url => `<link type="text/css" rel="stylesheet" href="${url}">`
+              ).join('\n              ')}
               <script type="text/javascript" src="${ctx.jasmineUrl}/jasmine.js"></script>
               <script type="text/javascript" src="${ctx.jasmineUrl}/jasmine-html.js"></script>
               <script type="text/javascript" src="${ctx.jasmineUrl}/boot.js"></script>
-
-              <script type="text/javascript" src="${ctx.sourceMappedStackTraceUrl}"></script>
-              <script type="text/javascript">
-               // Fixup stack traces, using this approach: https://gist.github.com/guncha/f45ceef6d483c384290a
-               jasmine.getEnv().addReporter( {
-                  jasmineDone: function() {
-                     try {
-                        var traces = document.querySelectorAll( '.jasmine-stack-trace' );
-                        [].slice.call( traces ).forEach( fixStackTrace );
-                     }
-                     catch(e) { /* ok, just an unsupported browser */ }
-                  }
-               } );
-               function fixStackTrace( node ) {
-                  sourceMappedStackTrace.mapStackTrace( node.textContent, function( stack ) {
-                     node.textContent = node.previousSibling.textContent + "\\n" + stack.join( "\\n" );
-                  } );
-               }
-               </script>
+              ${ctx.includeUrls.map(
+                  url => `<script type="text/javascript" src="${url}"></script>`
+              ).join('\n              ')}
            </head>
            <body>
              <script type="text/javascript" src="spec-runner.bundle.js"></script>
+             <style>
+              .webpack-jasmine-fixup-json-message:hover {
+                 cursor: pointer;
+                 background: white;
+              }
+             </style>
            </body>
          </html>
       `;
