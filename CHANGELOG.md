@@ -1,7 +1,9 @@
 # Changelog
 
-
 ## Last Changes
+
+
+## v0.3.0
 
 - [#2](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/2): also use better JSON reporting for `toHaveBeenCalledWith` matcher.
 
