@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.4.0
+
 - [#3](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/3): fixed reporting of HTML content and newlines
 - [#4](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/4): allow to specify an arbitrary number of configuration patterns
     + **BREAKING CHANGE:** see ticket for details
