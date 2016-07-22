@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+- [#4](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/4): allow to specify an arbitrary number of configuration patterns
+    + **BREAKING CHANGE:** see ticket for details
+
 
 ## v0.3.0
 

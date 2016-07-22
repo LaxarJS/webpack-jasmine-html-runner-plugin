@@ -23,24 +23,26 @@ WebpackJasmineHtmlRunnerPlugin.entry = entry;
 
 /**
  * Generates webpack entry points suitable for use with the WebpackJasmineHtmlRunnerPlugin plugin.
+ * Basically, each file matching one of the provided glob-patterns becomes an entry point which is named
+ * like that file, but without the extension.
  *
- * @param {String} pattern
- *   A file pattern of the form './path/to/[name]/spec-runner.js'.
- *   The [name]-portion of the path is matched using a '**' glob-expression, so it may contain subfolders.
+ * @param {...String} patterns
+ *   File patterns in glob-syntax (may contain * and **).
  *
- * @return {String} entry points for use as webpack `entry` configuration, as an object.
+ * @return {Object} entry points for use as webpack `entry` configuration, as an object.
  */
-function entry( pattern ) {
-   const globPattern = pattern.replace( '[name]', '**' );
-   const regexPattern = pattern.replace( '[name]', '(.*)' );
-   return glob.sync( globPattern )
-      .reduce( ( acc, path ) => {
-         const match = path.match( regexPattern );
-         if( match && match[ 1 ] ) {
-            acc[ match[ 1 ] + '/spec-runner' ] = path;
-         }
-         return acc;
-      }, {} );
+function entry() {
+   const patterns = Array.from( arguments );
+   const entry = {};
+   patterns.forEach( globPattern => {
+      // backwards compatibility:
+      const pattern = globPattern.replace( '[name]', '**' );
+      return glob.sync( pattern ).forEach( path => {
+         const baseName = path.replace( /\.[^.]+$/, '' );
+         entry[ baseName ] = path;
+      } );
+   } );
+   return entry;
 }
 
 const fixupDependencies = {
@@ -79,7 +81,7 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
       stylePaths: [],
       includePaths: [],
       fixupScripts: [ 'fixup-stacktraces', 'fixup-json-messages' ],
-      pattern: /.*\bspec-runner.*/
+      pattern: /.*\bspec\b.*/i
    }, optionalOptions || {} );
 
    options.jasminePath = options.jasminePath || path.resolve(
@@ -87,7 +89,7 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
    );
 
    this.apply = function( compiler ) {
-      compiler.plugin('emit', ( compilation, done ) => {
+      compiler.plugin( 'emit', ( compilation, done ) => {
          compilation.chunks
             .filter( chunk => options.pattern.test( chunk.name ) )
             .forEach( chunk => {
