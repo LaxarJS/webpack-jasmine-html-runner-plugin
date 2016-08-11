@@ -106,10 +106,13 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
                } );
 
                const chunkPath = path.resolve( options.cwd, `${chunk.name}.html` );
+               const specPath = path.resolve( options.cwd, `${chunk.name}.bundle.js` );
+               const specUrl = path.relative( path.dirname( chunkPath ), specPath );
                const styleUrls = stylePaths.map( p => path.relative( chunkPath, p ) );
                const includeUrls = includePaths.map( p => path.relative( chunkPath, p ) );
                const context = Object.assign( {}, {
-                  title: `${chunk.name} Spec ${options.title || ''}`,
+                  specUrl,
+                  title: `${options.title || 'Spec:'} ${path.basename( chunk.name )}`,
                   jasmineUrl: path.relative( chunkPath, options.jasminePath ),
                   styleUrls,
                   includeUrls
@@ -144,7 +147,7 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
               ).join('\n              ')}
            </head>
            <body>
-             <script type="text/javascript" src="spec-runner.bundle.js"></script>
+             <script type="text/javascript" src="${ctx.specUrl}"></script>
              <style>
               .webpack-jasmine-fixup-json-message:hover {
                  cursor: pointer;

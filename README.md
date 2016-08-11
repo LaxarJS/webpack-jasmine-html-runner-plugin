@@ -112,7 +112,7 @@ HTML will only be generated for entry paths matching this pattern.
 If your tests follow a different naming conventions, you may need to change this.
 
 
-### `fixup` (default: `[ 'fixup-stacktraces', 'fixup-json-messages' ]`)
+### `fixupScripts` (default: `[ 'fixup-stacktraces', 'fixup-json-messages' ]`)
 
 #### Loading pre-bundled fixup scripts
 
