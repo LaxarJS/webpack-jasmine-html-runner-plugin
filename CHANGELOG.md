@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.5.0
+
 - [#5](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/5): fixed spec-runner naming, docs
 
 
