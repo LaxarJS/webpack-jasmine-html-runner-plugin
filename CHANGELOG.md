@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v0.6.0
+
 - [#6](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/6): lifted peer dependency to webpack 2
 
 
