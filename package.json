@@ -30,7 +30,7 @@
     "sourcemapped-stacktrace": "^1.1.3"
   },
   "peerDependencies": {
-    "webpack": "^1.13.1",
+    "webpack": "^2.2.0",
     "jasmine-core": "^2.4.1"
   },
   "devDependencies": {
