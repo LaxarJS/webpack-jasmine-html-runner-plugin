@@ -2,7 +2,7 @@
 
 ## Last Changes
 
-- [#8](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/8): fixup json: avoid producing errors when re-formatting non-JSON
+- [#9](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin/issues/9): fixup json: avoid producing errors when re-formatting non-JSON
 
 
 ## v0.7.0
