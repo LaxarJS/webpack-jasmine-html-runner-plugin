@@ -1,6 +1,6 @@
 {
   "name": "webpack-jasmine-html-runner-plugin",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Use webpack with interactive browser testing",
   "main": "index.js",
   "scripts": {
