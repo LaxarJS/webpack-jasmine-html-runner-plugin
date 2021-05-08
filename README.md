@@ -2,7 +2,7 @@
 
 > *interactive in-browser testing* with webpack and Jasmine
 
-This webpack plugin helps to use  [webpack](http://webpack.github.io/) and the [webpack-dev-server](https://webpack.github.io/docs/webpack-dev-server.html) for loading and running in-browser [Jasmine 2](http://jasmine.github.io/2.4/introduction.html) tests.
+This webpack plugin helps to use  [webpack](http://webpack.github.io/) and the [webpack-dev-server](https://webpack.github.io/docs/webpack-dev-server.html) for loading and running in-browser [Jasmine](http://jasmine.github.io) tests.
 
 It generates an `spec-runner.html` webpack entry for each of your JavaScript spec-files, specified by a pattern. It uses [sourcemapped-stacktrace](https://github.com/novocaine/sourcemapped-stacktrace) to fix stack traces in the Jasmine HTML reporter so that reported bundle locations (file, line, column) are replaced with their actual source location.
 
