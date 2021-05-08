@@ -137,14 +137,14 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
               <title>${ctx.title}</title>
               <link type="text/css" rel="stylesheet" href="${ctx.jasmineUrl}/jasmine.css">
               ${ctx.styleUrls.map(
-                 url => `<link type="text/css" rel="stylesheet" href="${url}">`
-              ).join('\n              ')}
+      url => `<link type="text/css" rel="stylesheet" href="${url}">`
+   ).join('\n              ')}
               <script type="text/javascript" src="${ctx.jasmineUrl}/jasmine.js"></script>
               <script type="text/javascript" src="${ctx.jasmineUrl}/jasmine-html.js"></script>
               <script type="text/javascript" src="${ctx.jasmineUrl}/boot.js"></script>
               ${ctx.includeUrls.map(
-                  url => `<script type="text/javascript" src="${url}"></script>`
-              ).join('\n              ')}
+      url => `<script type="text/javascript" src="${url}"></script>`
+   ).join('\n              ')}
            </head>
            <body>
              <script type="text/javascript" src="${ctx.specUrl}"></script>
