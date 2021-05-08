@@ -89,43 +89,44 @@ function WebpackJasmineHtmlRunnerPlugin( optionalOptions ) {
    );
 
    this.apply = function( compiler ) {
-      compiler.plugin( 'emit', ( compilation, done ) => {
-         compilation.chunks
-            .filter( chunk => options.pattern.test( chunk.name ) )
-            .forEach( chunk => {
-               const stylePaths = options.stylePaths.slice();
-               const includePaths = options.includePaths.slice();
-               options.fixupScripts.forEach( name => {
-                  ( fixupDependencies[ name ] || [] ).forEach( dep => {
-                     includePaths.push( require.resolve( dep ) );
+      compiler.hooks.emit.tap(
+         'WebpackJasmineHtmlRunnerPlugin',
+         compilation => {
+            Array.from(compilation.chunks)
+               .filter( chunk => options.pattern.test( chunk.name ) )
+               .forEach( chunk => {
+                  const stylePaths = options.stylePaths.slice();
+                  const includePaths = options.includePaths.slice();
+                  options.fixupScripts.forEach( name => {
+                     ( fixupDependencies[ name ] || [] ).forEach( dep => {
+                        includePaths.push( require.resolve( dep ) );
+                     } );
+                     ( fixupStyles[ name ] || [] ).forEach( cssDep => {
+                        stylePaths.push( require.resolve( cssDep ) );
+                     } );
+                     includePaths.push( require.resolve( `./lib/${name}` ) );
                   } );
-                  ( fixupStyles[ name ] || [] ).forEach( cssDep => {
-                     stylePaths.push( require.resolve( cssDep ) );
-                  } );
-                  includePaths.push( require.resolve( `./lib/${name}` ) );
+
+                  const chunkPath = path.resolve( options.cwd, `${chunk.name}.html` );
+                  const specPath = path.resolve( options.cwd, `${chunk.name}.bundle.js` );
+                  const specUrl = path.relative( path.dirname( chunkPath ), specPath );
+                  const styleUrls = stylePaths.map( p => path.relative( chunkPath, p ) );
+                  const includeUrls = includePaths.map( p => path.relative( chunkPath, p ) );
+                  const context = Object.assign( {}, {
+                     specUrl,
+                     title: `${options.title || 'Spec:'} ${path.basename( chunk.name )}`,
+                     jasmineUrl: path.relative( chunkPath, options.jasminePath ),
+                     styleUrls,
+                     includeUrls
+                  }, options );
+
+                  const source = expand( context );
+                  compilation.emitAsset(`${chunk.name}.html`, {
+                     source: () => source,
+                     size: () => source.length
+                  });
                } );
-
-               const chunkPath = path.resolve( options.cwd, `${chunk.name}.html` );
-               const specPath = path.resolve( options.cwd, `${chunk.name}.bundle.js` );
-               const specUrl = path.relative( path.dirname( chunkPath ), specPath );
-               const styleUrls = stylePaths.map( p => path.relative( chunkPath, p ) );
-               const includeUrls = includePaths.map( p => path.relative( chunkPath, p ) );
-               const context = Object.assign( {}, {
-                  specUrl,
-                  title: `${options.title || 'Spec:'} ${path.basename( chunk.name )}`,
-                  jasmineUrl: path.relative( chunkPath, options.jasminePath ),
-                  styleUrls,
-                  includeUrls
-               }, options );
-
-               const source = expand( context );
-               compilation.assets[ `${chunk.name}.html` ] = {
-                  source: () => source,
-                  size: () => source.length
-               };
-            } );
-         done();
-      } );
+         } );
    };
 
    function expand( ctx ) {
