@@ -1,5 +1,7 @@
 # webpack-jasmine-html-runner-plugin
 
+NOTE: This is a fork of [the original](https://github.com/LaxarJS/webpack-jasmine-html-runner-plugin) with webpack 5 support.
+
 > *interactive in-browser testing* with webpack and Jasmine
 
 This webpack plugin helps to use  [webpack](http://webpack.github.io/) and the [webpack-dev-server](https://webpack.github.io/docs/webpack-dev-server.html) for loading and running in-browser [Jasmine](http://jasmine.github.io) tests.
